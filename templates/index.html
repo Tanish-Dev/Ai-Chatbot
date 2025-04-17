@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stella AI - Futuristic Assistant</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Custom styles -->
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+      :root {
+        --primary: #3b82f6;
+        --primary-light: #60a5fa;
+        --primary-dark: #2563eb;
+        --success: #10b981;
+        --bg-dark: #0a0e17;
+        --bg-card: #0f1724;
+        --text-light: #e0e0e0;
+        --text-muted: #6b7280;
+      }
+
+      .light-theme {
+        --bg-dark: #f0f5ff;
+        --bg-card: #ffffff;
+        --text-light: #1f2937;
+        --text-muted: #6b7280;
+      }
+
+      body {
+        font-family: "Poppins", "Inter", sans-serif;
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        min-height: 100vh;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .chat-container {
+        max-height: calc(100vh - 220px);
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        padding-right: 10px;
+      }
+
+      .chat-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-container::-webkit-scrollbar-track {
+        background: var(--bg-dark);
+        border-radius: 10px;
+      }
+
+      .chat-container::-webkit-scrollbar-thumb {
+        background: var(--primary-dark);
+        border-radius: 10px;
+      }
+
+      .pulse {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0.8);
+          opacity: 1;
+        }
+        70% {
+          transform: scale(2);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(2.5);
+          opacity: 0;
+        }
+      }
+
+      .typewriter {
+        overflow: hidden;
+        border-right: 0.15em solid var(--primary);
+        white-space: nowrap;
+        margin: 0 auto;
+        animation: typing 3.5s steps(40, end),
+          blink-caret 0.75s step-end infinite;
+      }
+
+      .fadeIn {
+        animation: fadeIn 0.5s ease-in-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .floating {
+        animation: floating 3s ease-in-out infinite;
+      }
+
+      @keyframes floating {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .user-bubble {
+        background: linear-gradient(145deg, #3b82f6, #2563eb);
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+      }
+
+      .bot-bubble {
+        background: linear-gradient(145deg, #1a202c, #0f1724);
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 4px 15px rgba(10, 14, 23, 0.2);
+      }
+
+      .light-theme .bot-bubble {
+        background: linear-gradient(145deg, #f3f4f6, #e5e7eb);
+        box-shadow: 0 4px 15px rgba(229, 231, 235, 0.5);
+      }
+
+      .input-area {
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .input-area:focus-within {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #2563eb;
+        transition: 0.4s;
+        border-radius: 24px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #f59e0b;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+      }
+    </style>
+  </head>
+  <body class="flex flex-col h-screen">
+    <!-- Splash Screen -->
+    <div
+      id="splash-screen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-[#0A0E17]"
+    >
+      <div class="text-center">
+        <div class="mb-6">
+          <svg
+            class="mx-auto h-20 w-20 text-blue-500 animate-pulse"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6m12 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h1 class="text-5xl font-bold text-blue-500 mb-4 floating">
+          STELLA AI
+        </h1>
+        <p class="text-lg text-gray-300 mb-8">Your Futuristic AI Assistant</p>
+        <div class="flex justify-center space-x-3">
+          <div
+            class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"
+            style="animation-delay: 0s"
+          ></div>
+          <div
+            class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"
+            style="animation-delay: 0.2s"
+          ></div>
+          <div
+            class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"
+            style="animation-delay: 0.4s"
+          ></div>
+          <div
+            class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"
+            style="animation-delay: 0.6s"
+          ></div>
+          <div
+            class="h-3 w-3 bg-blue-500 rounded-full animate-bounce"
+            style="animation-delay: 0.8s"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header
+      class="bg-[#0F1724] px-6 py-3 shadow-lg border-b border-blue-900/30 transition-colors duration-300"
+    >
+      <div class="flex items-center justify-between max-w-6xl mx-auto">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center mr-3 shadow-lg"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <h1 class="text-xl font-semibold text-white">Stella AI</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center">
+            <span class="text-sm text-gray-400 mr-2"
+              ><i class="fa-solid fa-moon mr-1"></i
+            ></span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="theme-toggle" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="text-sm text-gray-400 ml-2"
+              ><i class="fa-solid fa-sun"></i
+            ></span>
+          </div>
+          <div
+            class="flex items-center px-3 py-1 rounded-full bg-[#1a202c] border border-blue-900/30"
+          >
+            <span
+              class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"
+            ></span>
+            <div class="text-sm text-gray-400" id="status">Ready</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1 overflow-hidden p-4 md:p-6">
+      <div class="mx-auto max-w-5xl h-full flex flex-col">
+        <!-- Chat container -->
+        <div
+          class="chat-container flex-1 bg-[#0F1724] rounded-2xl p-4 mb-6 shadow-xl border border-blue-900/30 transition-colors duration-300"
+          id="chat-container"
+        >
+          <div class="space-y-4">
+            <!-- Welcome message -->
+            <div class="flex items-start fadeIn mb-4" id="welcome-message">
+              <div
+                class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mr-3 flex-shrink-0 shadow-lg"
+              >
+                <span class="text-white font-bold">S</span>
+              </div>
+              <div class="bot-bubble p-4 rounded-lg max-w-[80%]">
+                <p class="text-green-400 font-semibold mb-1">Stella</p>
+                <p class="text-gray-200">
+                  Hello! I'm Stella, your AI assistant. How may I help you
+                  today?
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input area -->
+        <div
+          class="input-area bg-[#0F1724] rounded-2xl p-4 shadow-xl border border-blue-900/30 transition-colors duration-300"
+        >
+          <div class="flex items-center">
+            <!-- Voice button -->
+            <div class="relative mr-4">
+              <button
+                id="voice-button"
+                class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg transform hover:scale-105"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </button>
+              <span
+                id="pulse-animation"
+                class="hidden absolute inset-0 bg-blue-500 rounded-full pulse"
+              ></span>
+            </div>
+
+            <!-- Text input -->
+            <div class="flex-1 relative">
+              <input
+                type="text"
+                id="message-input"
+                class="w-full bg-[#1a202c] text-white p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-inner border border-blue-900/30"
+                placeholder="Type your message..."
+              />
+            </div>
+
+            <!-- Send button -->
+            <button
+              id="send-button"
+              class="ml-4 bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg transform hover:scale-105 flex items-center gap-2"
+            >
+              <span>Send</span>
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+          <div class="flex justify-between mt-3 px-2">
+            <div class="text-xs text-gray-500">
+              <i class="fa-solid fa-circle-info mr-1"></i> Press Enter to send
+            </div>
+            <div class="text-xs text-gray-500">
+              <i class="fa-solid fa-keyboard mr-1"></i> Use voice button for
+              speech input
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-[#0F1724] text-center text-gray-400 py-3 text-sm border-t border-blue-900/30 transition-colors duration-300"
+    >
+      <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+        <p>© 2025 Stella AI - Futuristic Assistant</p>
+        <div class="flex gap-4">
+          <a
+            href="#"
+            class="text-gray-400 hover:text-blue-500 transition-colors"
+            ><i class="fa-solid fa-circle-question"></i> Help</a
+          >
+          <a
+            href="#"
+            class="text-gray-400 hover:text-blue-500 transition-colors"
+            ><i class="fa-solid fa-gear"></i> Settings</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
